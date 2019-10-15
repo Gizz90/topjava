@@ -20,7 +20,37 @@
 <section>
     <h3><a href="index.html">Home</a></h3>
     <hr/>
-    <h2>Meals</h2>
+    <h1>Meals</h1>
+
+    <h3> Filter</h3>
+    <form method="get" action="meals">
+        <input hidden name="action" value="filter">
+        <table border="1" cellpadding="8" cellspacing="1">
+            <thead>
+            <tr>
+                <th>StartDate</th>
+                <th>EndDate</th>
+                <th>StartTime</th>
+                <th>EndTime</th>
+            </tr>
+            </thead>
+            <tr>
+                <td>
+                    <input type="date" value="${param.get("startDate")}}" name="startDate">
+                </td>
+                <td>
+                    <input type="date" value="${param.get("endDate")}" name="endDate">
+                </td>
+                <td>
+                    <input type="time" value="${param.get("startTime")}" name="startTime">
+                </td>
+                <td>
+                    <input type="time" value="${param.get("endTime")}" name="endTime">
+                </td>
+            </tr>
+        </table>
+        <button type="submit">Filter</button>
+    </form>
     <a href="meals?action=create">Add Meal</a>
     <br><br>
     <table border="1" cellpadding="8" cellspacing="0">
