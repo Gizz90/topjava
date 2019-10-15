@@ -26,7 +26,7 @@ public class SpringMain {
 
             MealService mealService = appCtx.getBean(MealService.class);
             Meal meal = mealService.create(new Meal(LocalDateTime.now(), "food", 500), user.getId());
-            // mealService.update(meal, admin1.getId());
+//             mealService.update(meal, admin.getId());
 
             MealRestController mealRestController = appCtx.getBean(MealRestController.class);
             mealRestController.create(new Meal(LocalDateTime.now(), "food", 500));
