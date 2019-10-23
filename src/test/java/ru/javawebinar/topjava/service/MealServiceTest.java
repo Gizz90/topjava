@@ -21,7 +21,8 @@ import static ru.javawebinar.topjava.UserTestData.*;
 
 @ContextConfiguration({
         "classpath:spring/spring-app.xml",
-        "classpath:spring/spring-db.xml"
+        "classpath:spring/spring-db.xml",
+        "classpath:spring/spring-app-jdbc.xml"
 })
 @RunWith(SpringRunner.class)
 @Sql(scripts = "classpath:db/populateDB.sql", config = @SqlConfig(encoding = "UTF-8"))
@@ -38,31 +39,32 @@ public class MealServiceTest {
 
     @Test
     public void getAll() {
-        assertMatch(service.getAll(USER_ID), DINNER, LUNCH, BREAKFAST);
+        assertMatch(service.getAll(USER_ID), USER_DINNER, USER_LUNCH, USER_BREAKFAST);
     }
 
     @Test
     public void create() {
-        Meal newMeal = new Meal(LocalDateTime.now(), "new meal", 1000);
-        service.create(newMeal, USER_ID);
-        assertMatch(service.getAll(USER_ID), newMeal, DINNER, LUNCH, BREAKFAST);
+        Meal newMeal = new Meal(null, LocalDateTime.now(), "new meal", 1000);
+        Meal createdMeal = service.create(newMeal, USER_ID);
+        newMeal.setId(createdMeal.getId());
+        assertMatch(service.getAll(USER_ID), newMeal, USER_DINNER, USER_LUNCH, USER_BREAKFAST);
     }
 
     @Test(expected = DuplicateKeyException.class)
     public void createWithSameDateTime() {
-        Meal meal = new Meal(LocalDateTime.of(2019, 10, 16, 13, 00, 00), "UserLunch", 1100);
+        Meal meal = new Meal(USER_LUNCH.getDateTime(), "UserLunch", 1100);
         service.create(meal, USER_ID);
     }
 
     @Test
     public void get() {
-        Meal meal = service.get(DINNER.getId(), USER_ID);
-        assertMatch(meal, DINNER);
+        Meal meal = service.get(USER_DINNER.getId(), USER_ID);
+        assertMatch(meal, USER_DINNER);
     }
 
     @Test(expected = NotFoundException.class)
     public void getAnotherUserMeal() {
-        assertMatch(service.get(BREAKFAST.getId(), ADMIN_ID), BREAKFAST);
+        assertMatch(service.get(USER_BREAKFAST.getId(), ADMIN_ID), USER_BREAKFAST);
     }
 
     @Test(expected = NotFoundException.class)
@@ -72,13 +74,13 @@ public class MealServiceTest {
 
     @Test
     public void delete() {
-        service.delete(BREAKFAST.getId(), USER_ID);
-        assertMatch(service.getAll(USER_ID), DINNER, LUNCH);
+        service.delete(USER_BREAKFAST.getId(), USER_ID);
+        assertMatch(service.getAll(USER_ID), USER_DINNER, USER_LUNCH);
     }
 
     @Test(expected = NotFoundException.class)
     public void deleteAnotherUserMeal() {
-        service.delete(BREAKFAST.getId(), ADMIN_ID);
+        service.delete(USER_BREAKFAST.getId(), ADMIN_ID);
     }
 
     @Test(expected = NotFoundException.class)
@@ -88,16 +90,16 @@ public class MealServiceTest {
 
     @Test
     public void update() {
-        Meal updated = BREAKFAST;
+        Meal updated = new Meal(USER_BREAKFAST);
         updated.setDescription("updatedBreakfast");
         updated.setCalories(2000);
         service.update(updated, USER_ID);
-        assertMatch(updated, service.get(BREAKFAST.getId(), USER_ID));
+        assertMatch(service.get(USER_BREAKFAST.getId(), USER_ID), updated);
     }
 
     @Test(expected = NotFoundException.class)
     public void updateAnotherUserMeal() {
-        Meal updated = BREAKFAST;
+        Meal updated = new Meal(USER_BREAKFAST);
         updated.setDescription("updatedBreakfast");
         updated.setCalories(2000);
         service.update(updated, ADMIN_ID);
@@ -105,15 +107,15 @@ public class MealServiceTest {
 
     @Test(expected = NotFoundException.class)
     public void updateNotFound() {
-        service.update(BREAKFAST, ADMIN_ID);
+        service.update(USER_BREAKFAST, ADMIN_ID);
     }
 
     @Test
     public void getBetweenDates() {
-        List<Meal> meals = service.getBetweenDates(LocalDate.of(2019, 10, 16),
-                LocalDate.of(2019, 10, 17),
+        List<Meal> meals = service.getBetweenDates(LocalDate.of(2019, 10, 15),
+                LocalDate.of(2019, 10, 16),
                 USER_ID
         );
-        assertMatch(meals, DINNER, LUNCH);
+        assertMatch(meals, USER_LUNCH, USER_BREAKFAST);
     }
 }
