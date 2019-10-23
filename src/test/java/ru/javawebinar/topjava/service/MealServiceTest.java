@@ -47,6 +47,7 @@ public class MealServiceTest {
         Meal newMeal = new Meal(null, LocalDateTime.now(), "new meal", 1000);
         Meal createdMeal = service.create(newMeal, USER_ID);
         newMeal.setId(createdMeal.getId());
+        assertMatch(createdMeal, newMeal);
         assertMatch(service.getAll(USER_ID), newMeal, USER_DINNER, USER_LUNCH, USER_BREAKFAST);
     }
 
