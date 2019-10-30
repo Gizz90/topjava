@@ -1,8 +1,6 @@
 package ru.javawebinar.topjava.service;
 
-import org.junit.AfterClass;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.Stopwatch;
 import org.junit.runner.Description;
@@ -18,9 +16,8 @@ import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.Month;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import static ru.javawebinar.topjava.MealTestData.*;
@@ -35,9 +32,8 @@ import static ru.javawebinar.topjava.UserTestData.USER_ID;
 @Sql(scripts = "classpath:db/populateDB.sql", config = @SqlConfig(encoding = "UTF-8"))
 public class MealServiceTest {
 
-    private final Logger log = LoggerFactory.getLogger(MealServiceTest.class);
-    private static List<String> logs = new ArrayList<>();
-
+    private static final Logger log = LoggerFactory.getLogger(MealServiceTest.class);
+    private static StringBuilder logSummary = new StringBuilder();
     @Rule()
     public final ExpectedException thrown = ExpectedException.none();
 
@@ -45,15 +41,21 @@ public class MealServiceTest {
     public Stopwatch stopwatch = new Stopwatch() {
         @Override
         protected void finished(long nanos, Description description) {
-            String logMessage = String.format("Method name '%-15s' duration %dms", description.getMethodName(), TimeUnit.NANOSECONDS.toMillis(nanos));
-            logs.add(logMessage);
+            String logMessage = String.format("|%-20s| %10d |\n", description.getMethodName(), TimeUnit.NANOSECONDS.toMillis(nanos));
+            logSummary.append(logMessage);
             log.info(logMessage);
         }
     };
 
+    @BeforeClass
+    public static void initLogSummary() {
+        logSummary.append(String.format("\n|%-20s|%11s |\n\n", "TEST NAME", "TIME(ms)"));
+    }
+
+
     @AfterClass
-    public static void showLogs() {
-        logs.forEach(System.out::println);
+    public static void showLog() {
+        log.info(logSummary.toString());
     }
 
     @Autowired
@@ -117,6 +119,13 @@ public class MealServiceTest {
     public void updateNotFound() throws Exception {
         thrown.expect(NotFoundException.class);
         service.update(MEAL1, ADMIN_ID);
+    }
+
+    @Test
+    public void updateNonexistent() throws Exception {
+        thrown.expect(NotFoundException.class);
+        Meal nonexistentMeal = new Meal(1, LocalDateTime.now(), "nonexistentMeal", 1000);
+        service.update(nonexistentMeal, ADMIN_ID);
     }
 
     @Test

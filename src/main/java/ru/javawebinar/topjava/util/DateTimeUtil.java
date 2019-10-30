@@ -11,6 +11,9 @@ import java.time.format.DateTimeFormatter;
 public class DateTimeUtil {
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
+    public static final LocalDate DEFAULT_START_DATE = LocalDate.now().minusYears(100);
+    public static final LocalDate DEFAULT_END_DATE = LocalDate.now().plusYears(100);
+
     private DateTimeUtil() {
     }
 
@@ -18,11 +21,13 @@ public class DateTimeUtil {
         return ldt == null ? "" : ldt.format(DATE_TIME_FORMATTER);
     }
 
-    public static @Nullable LocalDate parseLocalDate(@Nullable String str) {
+    public static @Nullable
+    LocalDate parseLocalDate(@Nullable String str) {
         return StringUtils.isEmpty(str) ? null : LocalDate.parse(str);
     }
 
-    public static @Nullable LocalTime parseLocalTime(@Nullable String str) {
+    public static @Nullable
+    LocalTime parseLocalTime(@Nullable String str) {
         return StringUtils.isEmpty(str) ? null : LocalTime.parse(str);
     }
 
