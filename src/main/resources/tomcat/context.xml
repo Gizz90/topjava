@@ -49,6 +49,23 @@
               testOnBorrow="true"
               removeAbandonedOnBorrow="true"
               testWhileIdle="true"/>
+<!--for hsqldb-->
+   <!-- <Resource name="jdbc/topjava"
+              auth="Container"
+              type="javax.sql.DataSource"
+              url="jdbc:hsqldb:mem:topjava"
+              username="user"
+              password="password"
+              driverClassName="org.hsqldb.jdbcDriver"
+              validationQuery="SELECT 1 FROM INFORMATION_SCHEMA.SYSTEM_USERS"
+              maxTotal="10"
+              minIdle="2"
+              maxWaitMillis="20000"
+              initialSize="2"
+              maxIdle="5"
+              testOnBorrow="true"
+              removeAbandonedOnBorrow="true"
+              testWhileIdle="true"/>-->
     <!--
         username="wegxlfzjjgxaxy"
         password="SSQyKKE_e93kiUCR-ehzMcKCxZ"
