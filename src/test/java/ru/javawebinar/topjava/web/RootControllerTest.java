@@ -44,7 +44,7 @@ class RootControllerTest extends AbstractControllerTest {
                 .andExpect(model().attribute("meals", new AssertionMatcher<List<MealTo>>() {
                             @Override
                             public void assertion(List<MealTo> actual) throws AssertionError {
-                                assertMatch(actual, getTos(MEALS, DEFAULT_CALORIES_PER_DAY));
+                                assertMatchMealTo(actual, getTos(MEALS, DEFAULT_CALORIES_PER_DAY));
                             }
                         }
                 ));
