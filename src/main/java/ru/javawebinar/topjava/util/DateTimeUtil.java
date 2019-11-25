@@ -1,5 +1,6 @@
 package ru.javawebinar.topjava.util;
 
+import org.springframework.core.convert.converter.Converter;
 import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
 
@@ -37,6 +38,20 @@ public class DateTimeUtil {
 
     public static LocalDateTime getEndExclusive(LocalDate localDate) {
         return localDate != null ? localDate.plus(1, ChronoUnit.DAYS).atStartOfDay() : MAX_DATE;
+    }
+
+    static class TimeConverter implements Converter<String, LocalTime> {
+        @Override
+        public LocalTime convert(String source) {
+           return parseLocalTime(source);
+        }
+    }
+
+    static class DateConverter implements Converter<String, LocalDate> {
+        @Override
+        public LocalDate convert(String source) {
+            return parseLocalDate(source);
+        }
     }
 }
 
