@@ -23,6 +23,7 @@ import static ru.javawebinar.topjava.MealTestData.*;
 import static ru.javawebinar.topjava.TestUtil.readFromJson;
 import static ru.javawebinar.topjava.UserTestData.USER_ID;
 import static ru.javawebinar.topjava.util.MealsUtil.*;
+import static ru.javawebinar.topjava.web.SecurityUtil.authUserCaloriesPerDay;
 
 public class MealRestControllerTest extends AbstractControllerTest {
 
@@ -78,7 +79,7 @@ public class MealRestControllerTest extends AbstractControllerTest {
                 .andExpect(status().isOk())
                 .andDo(print())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(contentJsonMealTo(getTos(MEALS, DEFAULT_CALORIES_PER_DAY)));
+                .andExpect(contentJsonMealTo(getTos(MEALS, authUserCaloriesPerDay())));
     }
 
     @Test
