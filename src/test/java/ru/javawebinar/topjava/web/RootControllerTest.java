@@ -31,7 +31,7 @@ class RootControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    void testMeals() throws Exception {
+    void getMeals() throws Exception {
         mockMvc.perform(get("/meals"))
                 .andDo(print())
                 .andExpect(status().isOk())
