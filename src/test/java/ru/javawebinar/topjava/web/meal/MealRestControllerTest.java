@@ -49,10 +49,23 @@ class MealRestControllerTest extends AbstractControllerTest {
     }
 
     @Test
+    void getNotFound() throws Exception {
+        perform(doGet(ADMIN_MEAL_ID).basicAuth(USER))
+                .andExpect(status().isUnprocessableEntity());
+    }
+
+    @Test
     void delete() throws Exception {
         perform(doDelete(MEAL1_ID).basicAuth(USER))
                 .andExpect(status().isNoContent());
         assertThrows(NotFoundException.class, () -> mealService.get(MEAL1_ID, USER_ID));
+    }
+
+    @Test
+    void deleteNotFound() throws Exception {
+        perform(doDelete(ADMIN_MEAL_ID).basicAuth(USER))
+                .andDo(print())
+                .andExpect(status().isUnprocessableEntity());
     }
 
     @Test
