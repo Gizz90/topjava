@@ -3,6 +3,7 @@ package ru.javawebinar.topjava.web.user;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.ResultActions;
 import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.service.UserService;
 import ru.javawebinar.topjava.to.UserTo;
@@ -12,6 +13,7 @@ import ru.javawebinar.topjava.web.AbstractControllerTest;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static ru.javawebinar.topjava.TestUtil.readFromJson;
 import static ru.javawebinar.topjava.UserTestData.*;
 
 class ProfileRestControllerTest extends AbstractControllerTest {
@@ -42,6 +44,21 @@ class ProfileRestControllerTest extends AbstractControllerTest {
         perform(doDelete().basicAuth(USER))
                 .andExpect(status().isNoContent());
         USER_MATCHERS.assertMatch(userService.getAll(), ADMIN);
+    }
+
+    @Test
+    void register() throws Exception {
+        UserTo newTo = new UserTo(null, "newName", "newemail@ya.ru", "newPassword", 1500);
+        User newUser = UserUtil.createNewFromTo(newTo);
+        ResultActions action = perform(doPost("/register").jsonBody(newTo))
+                .andDo(print())
+                .andExpect(status().isCreated());
+
+        User created = readFromJson(action, User.class);
+        Integer newId = created.getId();
+        newUser.setId(newId);
+        USER_MATCHERS.assertMatch(created, newUser);
+        USER_MATCHERS.assertMatch(userService.get(newId), newUser);
     }
 
     @Test
