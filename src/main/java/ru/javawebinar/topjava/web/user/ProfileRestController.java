@@ -8,6 +8,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.to.UserTo;
 
+import javax.validation.Valid;
 import java.net.URI;
 
 import static ru.javawebinar.topjava.web.SecurityUtil.authUserId;
@@ -41,7 +42,7 @@ public class ProfileRestController extends AbstractUserController {
 
     @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void update(@RequestBody UserTo userTo) {
+    public void update(@RequestBody @Valid UserTo userTo) {
         super.update(userTo, authUserId());
     }
 

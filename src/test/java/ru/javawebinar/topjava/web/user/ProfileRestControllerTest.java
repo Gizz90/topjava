@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.web.multipart.support.StandardMultipartHttpServletRequest;
 import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.service.UserService;
 import ru.javawebinar.topjava.to.UserTo;
@@ -64,10 +65,22 @@ class ProfileRestControllerTest extends AbstractControllerTest {
     @Test
     void update() throws Exception {
         UserTo updatedTo = new UserTo(null, "newName", "newemail@ya.ru", "newPassword", 1500);
-        perform(doPut().jsonBody(updatedTo).basicAuth(USER))
+        perform(doPut()
+                .jsonBody(updatedTo)
+                .basicAuth(USER))
                 .andDo(print())
                 .andExpect(status().isNoContent());
 
         USER_MATCHERS.assertMatch(userService.get(USER_ID), UserUtil.updateFromTo(new User(USER), updatedTo));
+    }
+
+    @Test
+    void updateNotValid() throws Exception {
+        UserTo updatedTo = new UserTo(null, "","new@gmail.com", "newpassword", 2000);
+        perform(doPut()
+                .jsonBody(updatedTo)
+                .basicAuth(USER))
+                .andDo(print())
+                .andExpect(status().isUnprocessableEntity());
     }
 }

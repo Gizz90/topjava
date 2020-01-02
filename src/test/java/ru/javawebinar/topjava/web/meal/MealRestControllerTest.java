@@ -78,6 +78,22 @@ class MealRestControllerTest extends AbstractControllerTest {
     }
 
     @Test
+    void updateNotValid() throws Exception {
+        Meal updated = MealTestData.getUpdated();
+        updated.setCalories(0);
+
+        perform(doPut(MEAL1_ID).jsonBody(updated).basicAuth(USER)).andExpect(status().isUnprocessableEntity());
+    }
+
+    @Test
+    void createNotValid() throws Exception {
+        Meal created = MealTestData.getNew();
+        created.setCalories(0);
+
+        perform(doPost().jsonBody(created).basicAuth(USER)).andExpect(status().isUnprocessableEntity());
+    }
+
+    @Test
     void createWithLocation() throws Exception {
         Meal newMeal = MealTestData.getNew();
         ResultActions action = perform(doPost().jsonBody(newMeal).basicAuth(USER));

@@ -82,10 +82,32 @@ class AdminRestControllerTest extends AbstractControllerTest {
     @Test
     void update() throws Exception {
         User updated = UserTestData.getUpdated();
-        perform(doPut(USER_ID).jsonBody(updated).basicAuth(ADMIN))
+        perform(doPut(USER_ID)
+                .jsonUserWithPassword(updated)
+                .basicAuth(ADMIN))
                 .andExpect(status().isNoContent());
 
         USER_MATCHERS.assertMatch(userService.get(USER_ID), updated);
+    }
+
+    @Test
+    void updateNotValid() throws Exception {
+        User updated = UserTestData.getUpdated();
+        updated.setName("");
+        perform(doPut(USER_ID)
+                .jsonUserWithPassword(updated)
+                .basicAuth(ADMIN))
+                .andExpect(status().isUnprocessableEntity());
+    }
+
+    @Test
+    void createNotValid() throws Exception {
+        User newUser = UserTestData.getNew();
+        newUser.setName("");
+        ResultActions actions = perform(doPost()
+                .jsonUserWithPassword(newUser)
+                .basicAuth(ADMIN))
+                .andExpect(status().isUnprocessableEntity());
     }
 
     @Test
