@@ -11,7 +11,10 @@ function makeEditable(ctx) {
                     "dataSrc": ""
                 },
                 "paging": false,
-                "info": true
+                "info": true,
+                "language": {
+                    "search": i18n["common.search"]
+                }
             }
         ));
 
@@ -98,7 +101,7 @@ function failNoty(jqXHR) {
     closeNoty();
     var errorInfo = JSON.parse(jqXHR.responseText);
     failedNote = new Noty({
-        text: "<span class='fa fa-lg fa-exclamation-circle'></span> &nbsp;" + i18n["common.errorStatus"] + ": " + jqXHR.status + "<br>" + errorInfo.type + "<br>" + errorInfo.details.join("<br>"),
+        text: "<span class='fa fa-lg fa-exclamation-circle'></span> &nbsp;" + errorInfo.typeMessage + "<br>" + errorInfo.details.join("<br>"),
         type: "error",
         layout: "bottomRight"
     }).show();
