@@ -3,6 +3,9 @@ package ru.javawebinar.topjava.web.user;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.dao.DataIntegrityViolationException;
 import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.service.UserService;
 import ru.javawebinar.topjava.to.UserTo;
@@ -18,6 +21,9 @@ public abstract class AbstractUserController {
 
     @Autowired
     private UserService service;
+
+    @Autowired
+    private MessageSource messageSource;
 
     public List<User> getAll() {
         log.info("getAll");
@@ -35,9 +41,13 @@ public abstract class AbstractUserController {
     }
 
     public User create(User user) {
-        log.info("create {}", user);
-        checkNew(user);
-        return service.create(user);
+        try {
+            log.info("create {}", user);
+            checkNew(user);
+            return service.create(user);
+        } catch (DataIntegrityViolationException e) {
+            throw new DataIntegrityViolationException(messageSource.getMessage("user.duplicateEmail", null, LocaleContextHolder.getLocale()));
+        }
     }
 
     public void delete(int id) {
@@ -46,15 +56,23 @@ public abstract class AbstractUserController {
     }
 
     public void update(User user, int id) {
-        log.info("update {} with id={}", user, id);
-        assureIdConsistent(user, id);
-        service.update(user);
+        try {
+            log.info("update {} with id={}", user, id);
+            assureIdConsistent(user, id);
+            service.update(user);
+        } catch (DataIntegrityViolationException e) {
+            throw new DataIntegrityViolationException(messageSource.getMessage("user.duplicateEmail", null, LocaleContextHolder.getLocale()));
+        }
     }
 
     public void update(UserTo userTo, int id) {
-        log.info("update {} with id={}", userTo, id);
-        assureIdConsistent(userTo, id);
-        service.update(userTo);
+        try {
+            log.info("update {} with id={}", userTo, id);
+            assureIdConsistent(userTo, id);
+            service.update(userTo);
+        } catch (DataIntegrityViolationException e) {
+            throw new DataIntegrityViolationException(messageSource.getMessage("user.duplicateEmail", null, LocaleContextHolder.getLocale()));
+        }
     }
 
     public User getByMail(String email) {
