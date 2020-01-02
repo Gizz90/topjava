@@ -8,13 +8,13 @@ import org.springframework.test.web.servlet.ResultActions;
 import ru.javawebinar.topjava.MealTestData;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.service.MealService;
+import ru.javawebinar.topjava.util.exception.ErrorType;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 import ru.javawebinar.topjava.web.AbstractControllerTest;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static ru.javawebinar.topjava.MealTestData.*;
 import static ru.javawebinar.topjava.TestUtil.readFromJson;
 import static ru.javawebinar.topjava.TestUtil.readFromJsonMvcResult;
@@ -113,5 +113,25 @@ class MealRestControllerTest extends AbstractControllerTest {
         perform(doGet("filter?startDate=&endTime=").basicAuth(USER))
                 .andExpect(status().isOk())
                 .andExpect(MEAL_TO_MATCHERS.contentJson(getTos(MEALS, USER.getCaloriesPerDay())));
+    }
+
+    @Test
+    void createInvalid() throws Exception {
+        Meal invalid = new Meal(null, null, "Dummy", 200);
+        perform(doPost().jsonBody(invalid).basicAuth(ADMIN))
+                .andDo(print())
+                .andExpect(status().isUnprocessableEntity())
+                .andExpect(jsonPath("$.type").value(ErrorType.VALIDATION_ERROR.name()))
+                .andDo(print());
+    }
+
+    @Test
+    void updateInvalid() throws Exception {
+        Meal invalid = new Meal(MEAL1_ID, null, null, 6000);
+        perform(doPut(MEAL1_ID).jsonBody(invalid).basicAuth(USER))
+                .andDo(print())
+                .andExpect(status().isUnprocessableEntity())
+                .andExpect(jsonPath("$.type").value(ErrorType.VALIDATION_ERROR.name()))
+                .andDo(print());
     }
 }
